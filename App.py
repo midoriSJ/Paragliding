@@ -49,6 +49,26 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorator
 
+def get_region_in_english(region_korean):
+    region_map = {
+        '경남': 'Gyeongsangnam-do',
+        '전남': 'Jeollanam-do',
+        '강원': 'Gangwon-do',
+        '경기': 'Gyeonggi-do',
+        '제주': 'Jeju',
+        '울산': 'Ulsan',
+        '광주': 'Gwangju',
+        '대구': 'Daegu',
+        '전북': 'Jeollabuk-do',
+        '경북': 'Gyeongsangbuk-do',
+        '충남': 'Chungcheongnam-do',
+        '충북': 'Chungcheongbuk-do',
+        '부산': 'Busan',
+        '대전': 'Daejeon'
+        # 필요한 경우 여기에 더 많은 매핑을 추가하세요.
+    }
+    return region_map.get(region_korean, None)
+
 @app.route('/api/signup', methods=['POST'], endpoint='signup')
 def signup():
     data = request.get_json()
@@ -187,7 +207,6 @@ def get_factories():
 @app.route('/api/weather', methods=['POST'], endpoint='get_weather')
 @token_required
 def get_weather():
-    # OpenWeatherMap API 키
     API_KEY = '111002b452c141798051161faec61742'
     data = request.get_json()
     factory_name = data.get('factoryName')
@@ -296,36 +315,46 @@ def get_weather():
         '혹성산이륙장': '충북'
     }
 
-    region = factory_regions.get(factory_name)
-
-    if not region:
+    region_korean = factory_regions.get(factory_name)
+    if not region_korean:
         return jsonify({"error": "Invalid factory name"}), 400
 
+    region_english = get_region_in_english(region_korean)
+    if not region_english:
+        return jsonify({"error": "Invalid region"}), 400
+
     # OpenWeatherMap API 요청
-    weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={region},KR&appid={API_KEY}&units=metric'
+    weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={region_english},KR&appid={API_KEY}&units=metric'
     response = requests.get(weather_url)
     weather_data = response.json()
 
     if response.status_code != 200:
+        print(f"Weather API request failed: {response.status_code} - {response.text}")
         return jsonify({"error": "Failed to fetch weather data"}), response.status_code
 
     result = {
         "factoryName": factory_name,
-        "region": region,
+        "region": region_english,
         "weather": weather_data["weather"][0]["description"],
         "temperature": weather_data["main"]["temp"],
-        "wind_speed": weather_data["wind"]["speed"]
+        "wind_speed": weather_data["wind"]["speed"],
+        "wind_direction": weather_data["wind"]["deg"],
+        "cloud_coverage": weather_data["clouds"]["all"]
     }
 
     # MySQL DB에 날씨 데이터 저장
-    cur = mysql.connection.cursor()
-    insert_query = """
-    INSERT INTO weather_data (factory_name, region, weather, temperature, wind_speed)
-    VALUES (%s, %s, %s, %s, %s)
-    """
-    cur.execute(insert_query, (result["factoryName"], result["region"], result["weather"], result["temperature"], result["wind_speed"]))
-    mysql.connection.commit()
-    cur.close()
+    try:
+        cur = mysql.connection.cursor()
+        insert_query = """
+        INSERT INTO weather_data (factoryName, region, weather, temperature, wind_speed)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        cur.execute(insert_query, (result["factoryName"], result["region"], result["weather"], result["temperature"], result["wind_speed"]))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        print(f"Error storing weather data: {e}")
+        return jsonify({"error": "Failed to store weather data"}), 500
 
     return jsonify(result)
 
@@ -348,6 +377,7 @@ def get_posts():
     except Exception as e:
         print(f"Error retrieving posts: {e}")  # 오류 메시지 출력
         return jsonify({"message": "Error retrieving posts", "error": str(e)}), 500
+
 
 @app.route('/api/createPosts', methods=['POST'], endpoint='create_post')
 @token_required

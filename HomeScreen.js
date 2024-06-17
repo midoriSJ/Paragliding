@@ -41,10 +41,10 @@ export default function HomeScreen({ route }) {
     };
 
     fetchPosts();
-    if (region) {
+    if (selectedFactory) {
       fetchWeather();
     }
-  }, [region]);
+  }, [selectedFactory]);
 
   return (
     <ScrollView style={styles.container}>
@@ -63,7 +63,7 @@ export default function HomeScreen({ route }) {
           <View style={styles.weatherStats}>
             <View style={styles.weatherStat}>
               <Text style={styles.weatherStatLabel}>풍향</Text>
-              <Text style={styles.weatherStatValue}>{weather.windDirection || '-'}</Text>
+              <Text style={styles.weatherStatValue}>{weather.wind_direction || '-'}</Text>
             </View>
             <View style={styles.weatherStat}>
               <Text style={styles.weatherStatLabel}>풍속</Text>
@@ -71,7 +71,7 @@ export default function HomeScreen({ route }) {
             </View>
             <View style={styles.weatherStat}>
               <Text style={styles.weatherStatLabel}>구름양</Text>
-              <Text style={styles.weatherStatValue}>{weather.cloudCoverage || '-'}</Text>
+              <Text style={styles.weatherStatValue}>{weather.cloud_coverage || '-'}</Text>
             </View>
           </View>
         </View>

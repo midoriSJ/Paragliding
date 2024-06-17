@@ -30,6 +30,11 @@ export default function BowFactoryScreen({ route, navigation }) {
     fetchSummaryData();
   }, []);
 
+  const handleFactoryPress = (factoryName) => {
+    const region = route.params?.region;
+    navigation.navigate('Home', { selectedFactory: factoryName, region: region });
+  };
+
   const getImageSource = (factoryName) => {
     const images = {
       '각산이륙장': require('../assets/GakSanTakeOff.png'),
@@ -142,13 +147,15 @@ export default function BowFactoryScreen({ route, navigation }) {
         </TouchableOpacity>
       </View>
       {selectedFactories.map((factoryName, index) => (
-        <View key={index} style={styles.detailsContainer}>
-          <View style={styles.summaryContainer}>
-            <Text style={styles.summaryTitle}>{factoryName}</Text>
-            <Text style={styles.summaryText}>{summaryData[factoryName]}</Text>
-            <Image source={getImageSource(factoryName)} style={styles.factoryImage} />
+        <TouchableOpacity key={index} onPress={() => handleFactoryPress(factoryName)}>
+          <View style={styles.detailsContainer}>
+            <View style={styles.summaryContainer}>
+              <Text style={styles.summaryTitle}>{factoryName}</Text>
+              <Text style={styles.summaryText}>{summaryData[factoryName]}</Text>
+              <Image source={getImageSource(factoryName)} style={styles.factoryImage} />
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );

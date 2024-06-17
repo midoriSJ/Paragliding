@@ -76,13 +76,13 @@ export default function SelectBowFactoryScreen({ navigation }) {
   };
 
   const handleConfirm = () => {
-  if (selectedFactory) {
-    const region = selectedRegion.name;
-    navigation.navigate('BowFactory', { selectedFactory, region });
-  } else {
-    Alert.alert('선택 오류', '활공장을 선택하세요.');
-  }
-};
+    if (selectedFactory) {
+      const region = selectedRegion.name;
+      navigation.navigate('BowFactoryScreen', { selectedFactory, region });
+    } else {
+      Alert.alert('선택 오류', '활공장을 선택하세요.');
+    }
+  };
 
   return (
     <View style={styles.container}>
