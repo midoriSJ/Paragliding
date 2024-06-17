@@ -28,7 +28,8 @@ export default function HomeScreen({ route }) {
       try {
         const token = await AsyncStorage.getItem('token');
         const response = await axios.post('http://121.127.174.92:5000/api/weather', {
-          region,
+          factoryName: selectedFactory,
+        }, {
           headers: { Authorization: `Bearer ${token}` }
         });
         console.log('Weather fetched:', response.data);
@@ -54,11 +55,10 @@ export default function HomeScreen({ route }) {
       <View style={styles.weatherSection}>
         <Text style={styles.sectionTitle}>활공장: {selectedFactory}</Text>
         <View style={styles.weatherCard}>
-          <Text style={styles.weatherLocation}>{weather.location || '활공장 정보 없음'}</Text>
+          <Text style={styles.weatherLocation}>{region || '활공장 정보 없음'}</Text>
           <View style={styles.weatherInfo}>
-            <Image source={{ uri: weather.icon || 'https://i.imgur.com/llF5iyg.png' }} style={styles.weatherIcon} />
-            <Text style={styles.temperature}>{weather.temperature || '-'}</Text>
-            <Text style={styles.weatherDetails}>{weather.alert || '날씨특보 없음'}</Text>
+            <Text style={styles.temperature}>{weather.temperature ? `${weather.temperature}°C` : '-'}</Text>
+            <Text style={styles.weatherDetails}>{weather.weather || '날씨 정보 없음'}</Text>
           </View>
           <View style={styles.weatherStats}>
             <View style={styles.weatherStat}>
@@ -67,7 +67,7 @@ export default function HomeScreen({ route }) {
             </View>
             <View style={styles.weatherStat}>
               <Text style={styles.weatherStatLabel}>풍속</Text>
-              <Text style={styles.weatherStatValue}>{weather.windSpeed || '-'}</Text>
+              <Text style={styles.weatherStatValue}>{weather.wind_speed ? `${weather.wind_speed} m/s` : '-'}</Text>
             </View>
             <View style={styles.weatherStat}>
               <Text style={styles.weatherStatLabel}>구름양</Text>
@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
-    paddingLeft: 16,
+    justifyContent: 'center',
+    padding: 20,
   },
   logo: {
     width: 50,
@@ -113,23 +113,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   weatherSection: {
-    paddingHorizontal: 16,
-    marginBottom: 20,
+    padding: 20,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   weatherCard: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f0f0f0',
+    padding: 20,
     borderRadius: 10,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
   },
   weatherLocation: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 10,
   },
   weatherInfo: {
@@ -137,19 +134,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  weatherIcon: {
-    width: 50,
-    height: 50,
-    marginRight: 10,
-  },
   temperature: {
-    fontSize: 36,
+    fontSize: 48,
     fontWeight: 'bold',
     marginRight: 10,
   },
   weatherDetails: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 18,
   },
   weatherStats: {
     flexDirection: 'row',
@@ -159,23 +150,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   weatherStatLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
-  },
-  weatherStatValue: {
     fontSize: 16,
     fontWeight: 'bold',
   },
+  weatherStatValue: {
+    fontSize: 16,
+  },
   boardSection: {
-    paddingHorizontal: 16,
-    marginBottom: 20,
+    padding: 20,
   },
   boardCard: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f0f0f0',
+    padding: 20,
     borderRadius: 10,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
   },
 });

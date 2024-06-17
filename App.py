@@ -11,7 +11,6 @@ import pytz
 import requests
 import mysql.connector
 from mysql.connector import Error
-from time import sleep
 
 app = Flask(__name__)
 CORS(app)
@@ -25,61 +24,10 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 
 mysql = MySQL(app)
 
-# OpenWeatherMap API 키
-API_KEY = '111002b452c141798051161faec61742'
-
 # 지역 리스트
 cities = ["Gyeongsangnam-do", "Ulsan", "Jeollabuk-do", "Jeju", "Chungcheongnam-do", 
           "Gyeonggi-do", "Gangwon-do", "Gyeongsangbuk-do", "Gwangju", "Daegu", 
           "Chungcheongbuk-do", "Jeollanam-do", "Busan"]
-
-def insert_weather_data(city, temperature, wind_speed, description):
-    cur = mysql.connection.cursor()
-    insert_query = """
-    INSERT INTO weather_data (city, temperature, wind_speed, description)
-    VALUES (%s, %s, %s, %s)
-    """
-    cur.execute(insert_query, (city, temperature, wind_speed, description))
-    mysql.connection.commit()
-    cur.close()
-
-def get_weather_data(city):
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
-    response = requests.get(url)
-    data = response.json()
-    return {
-        "city": data['name'],
-        "temperature": data['main']['temp'],
-        "wind_speed": data['wind']['speed'],
-        "description": data['weather'][0]['description']
-    }
-
-def create_connection():
-    try:
-        connection = mysql.connect
-        connection = mysql.connection
-        if connection.is_connected():
-            print("Connection to MySQL DB successful")
-        return connection
-    except Error as e:
-        print(f"The error '{e}' occurred")
-        return None
-
-def fetch_and_store_weather_data():
-    while True:
-        with app.app_context():
-            connection = create_connection()
-            if not connection:
-                return
-
-            for city in cities:
-                try:
-                    weather_data = get_weather_data(city)
-                    insert_weather_data(connection, weather_data['city'], weather_data['temperature'], weather_data['wind_speed'], weather_data['description'])
-                    print(f"Weather data for {city} inserted successfully.")
-                except Exception as e:
-                    print(f"An error occurred for city {city}: {e}")
-        sleep(1800)  # 30분마다 데이터 갱신
 
 verification_codes = {}
 
@@ -239,6 +187,8 @@ def get_factories():
 @app.route('/api/weather', methods=['POST'], endpoint='get_weather')
 @token_required
 def get_weather():
+    # OpenWeatherMap API 키
+    API_KEY = '111002b452c141798051161faec61742'
     data = request.get_json()
     factory_name = data.get('factoryName')
 
@@ -360,10 +310,22 @@ def get_weather():
         return jsonify({"error": "Failed to fetch weather data"}), response.status_code
 
     result = {
+        "factoryName": factory_name,
+        "region": region,
         "weather": weather_data["weather"][0]["description"],
         "temperature": weather_data["main"]["temp"],
         "wind_speed": weather_data["wind"]["speed"]
     }
+
+    # MySQL DB에 날씨 데이터 저장
+    cur = mysql.connection.cursor()
+    insert_query = """
+    INSERT INTO weather_data (factory_name, region, weather, temperature, wind_speed)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+    cur.execute(insert_query, (result["factoryName"], result["region"], result["weather"], result["temperature"], result["wind_speed"]))
+    mysql.connection.commit()
+    cur.close()
 
     return jsonify(result)
 
