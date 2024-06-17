@@ -29,13 +29,13 @@ function HomeTabs() {
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          if (route.name === '홈') {
+          if (route.name === 'Home') {
             iconName = 'home';
-          } else if (route.name === '게시판') {
+          } else if (route.name === 'Board') {
             iconName = 'list';
-          } else if (route.name === '마이페이지') {
+          } else if (route.name === 'MyPage') {
             iconName = 'person';
-          } else if (route.name === '활공장') {
+          } else if (route.name === 'BowFactory') {
             iconName = 'map';
           }
 
@@ -43,10 +43,10 @@ function HomeTabs() {
         },
       })}
     >
-      <Tab.Screen name="홈" component={HomeScreen} />
-      <Tab.Screen name="활공장" component={BowFactoryScreen} />
-      <Tab.Screen name="게시판" component={BoardScreen} />
-      <Tab.Screen name="마이페이지" component={MyPageScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="BowFactory" component={BowFactoryScreen} />
+      <Tab.Screen name="Board" component={BoardScreen} />
+      <Tab.Screen name="MyPage" component={MyPageScreen} />
     </Tab.Navigator>
   );
 }
@@ -72,15 +72,17 @@ export default function App() {
           {props => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
         </Stack.Screen>
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="SelectBowFactoryScreen" component={SelectBowFactoryScreen} />
         {isLoggedIn && (
           <>
             <Stack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }} />
-            <Stack.Screen name="ChangeUserInfo" component={ChangeUserInfoScreen} options={{ title: "개인정보 수정" }} />
-            <Stack.Screen name="CheckUserInfo" component={CheckUserInfoScreen} />
-            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+            <Stack.Screen name="BowFactoryScreen" component={BowFactoryScreen} />
+            <Stack.Screen name="SelectBowFactoryScreen" component={SelectBowFactoryScreen} />
+            <Stack.Screen name="FirstBowFactoryInfoScreen" component={FirstBowFactoryInfoScreen} />
           </>
         )}
+        <Stack.Screen name="ChangeUserInfo" component={ChangeUserInfoScreen} options={{ title: "개인정보 수정" }} />
+        <Stack.Screen name="CheckUserInfo" component={CheckUserInfoScreen} />
+        <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

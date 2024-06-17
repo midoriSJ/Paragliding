@@ -13,7 +13,14 @@ export default function SelectBowFactoryScreen({ navigation }) {
     const fetchRegions = async () => {
       try {
         const response = await axios.get('http://121.127.174.92:5000/factories');
-        setRegions(response.data);
+        const regionsData = response.data.reduce((acc, factory) => {
+          if (!acc[factory.region]) {
+            acc[factory.region] = { name: factory.region, factories: [] };
+          }
+          acc[factory.region].factories.push(factory.name);
+          return acc;
+        }, {});
+        setRegions(Object.values(regionsData));
       } catch (error) {
         console.error('Error fetching regions:', error);
         Alert.alert('오류', '활공장 정보를 가져오는 중 오류가 발생했습니다.');

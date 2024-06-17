@@ -238,20 +238,7 @@ export default function BowFactoryScreen({ route, navigation }) {
   };
 
   const handleFactoryPress = (factoryName) => {
-    const region = getRegionForFactory(factoryName);
-    fetchWeatherData(region);
-  };
-
-  const fetchWeatherData = async (region) => {
-    try {
-      const response = await axios.post('http://121.127.174.92:5000/api/weather', {
-        data: { region }
-      });
-      navigation.navigate('HomeScreen', { weatherData: response.data });
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      Alert.alert('오류', '날씨 정보를 가져오는 중 오류가 발생했습니다.');
-    }
+    navigation.navigate('HomeScreen', { selectedFactory: factoryName });
   };
 
   return (
