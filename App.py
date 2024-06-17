@@ -220,6 +220,22 @@ def get_launch_sites():
     except Exception as e:
         return jsonify({"message": "Error retrieving launch sites", "error": str(e)}), 500
 
+@app.route('/factories', methods=['GET'])
+def get_factories():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT siteName, region FROM launch_sites")
+        factories = cur.fetchall()
+        cur.close()
+        
+        factories_list = []
+        for factory in factories:
+            factories_list.append({"name": factory[0], "region": factory[1]})
+        
+        return jsonify(factories_list), 200
+    except Exception as e:
+        return jsonify({"message": "Error retrieving factories", "error": str(e)}), 500
+
 @app.route('/api/weather', methods=['POST'], endpoint='get_weather')
 @token_required
 def get_weather():
