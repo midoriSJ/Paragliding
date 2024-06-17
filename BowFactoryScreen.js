@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import axios from 'axios';
 
 export default function BowFactoryScreen({ route, navigation }) {
@@ -28,110 +28,6 @@ export default function BowFactoryScreen({ route, navigation }) {
 
     fetchSummaryData();
   }, []);
-
-  const getRegionForFactory = (factoryName) => {
-    const factoryRegions = {
-      '각산이륙장': '경남',
-      '간월재이륙장': '전남',
-      '감악산이륙장': '강원',
-      '경각산이륙장': '경기',
-      '계룡산이륙장': '경남',
-      '고근산이륙장': '경북',
-      '고헌산(곰돌이)이륙장': '제주',
-      '관모산이륙장': '강원',
-      '광교산이륙장': '경남',
-      '광의이륙장': '강원',
-      '괘방산 활공장': '경남',
-      '국당이륙장': '울산',
-      '금오름이륙장': '광주',
-      '기룡산 이륙장': '전북',
-      '남산 이륙장': '전남',
-      '남포이륙장': '강원',
-      '노안이륙장': '대구',
-      '논개이륙장': '강원',
-      '달마산이륙장': '경남',
-      '대관령 활공장': '충남',
-      '대니산이륙장': '충남',
-      '대릉산 이륙장': '충북',
-      '대부도 구봉산 이륙장': '경남',
-      '대암산이륙장': '전남',
-      '덕기봉이륙장': '경남',
-      '도비산 활공장': '경남',
-      '두산 활공장': '경기',
-      '마래산이륙장': '강원',
-      '망실봉이륙장': '전북',
-      '망운산이륙장': '경북',
-      '매산리 활공장': '전북',
-      '무릉 활공장': '경남',
-      '무주이륙장': '경남',
-      '무척산이륙장': '전북',
-      '문경활공랜드': '경기',
-      '미륵산이륙장': '경남',
-      '미시령 활공장': '경북',
-      '바람재이륙장': '전북',
-      '박달산 활공장': '충남',
-      '발례이륙장': '충북',
-      '방광산이륙장': '경북',
-      '방장산이륙장': '강원',
-      '백월산이륙장': '강원',
-      '백화산이륙장': '충남',
-      '벽도산이륙장': '경남',
-      '봉래산이륙장': '경남',
-      '봉수대이륙장': '경기',
-      '봉화산(당진) 활공장': '충남',
-      '봉화산이륙장': '강원',
-      '불탄산이륙장': '전남',
-      '사곡이륙장': '제주',
-      '사명산이륙장': '경기',
-      '사자산이륙장': '경기',
-      '서독산 활공장': '경기',
-      '서우봉이륙장': '대전',
-      '서운산 활공장': '제주',
-      '송라산 활공장': '경북',
-      '식장산이륙장': '충북',
-      '안동길안이륙장': '경기',
-      '양백산이륙장': '울산',
-      '어섬 활공장': '경기',
-      '연화산이륙장': '전남',
-      '예봉산이륙장': '전남',
-      '오봉산이륙장': '충남',
-      '오산이륙장': '전북',
-      '오서산 활공장': '경남',
-      '오성산이륙장': '울산',
-      '와룡산이륙장': '경기',
-      '와우정사 활공장': '충남',
-      '왜목 활공장': '경기',
-      '원적산이륙장': '제주',
-      '월랑봉이륙장': '경기',
-      '유명산 활공장': '경기',
-      '은봉산 활공장': '경남',
-      '음달산이륙장': '경남',
-      '자양산이륙장': '전남',
-      '장동산이륙장': '강원',
-      '장암산 활공장': '충남',
-      '장암산이륙장': '전남',
-      '재석산이륙장': '전남',
-      '정광산이륙장': '경북',
-      '주월산이륙장': '부산',
-      '주작산이륙장': '전남',
-      '진례이륙장': '전북',
-      '진천 활공장': '경북',
-      '창평이륙장': '경남',
-      '초록봉 활공장': '강원',
-      '칠포이륙장': '경기',
-      '특리이륙장': '경북',
-      '한우산이륙장': '경남',
-      '향적봉이륙장': '경남',
-      '형제봉이륙장': '전남',
-      '혜음령이륙장': '강원',
-      '호락산이륙장': '경기',
-      '화순이륙장': '경북',
-      '황금산이륙장': '전남',
-      '황령산이륙장': '경남',
-      '혹성산이륙장': '충북'
-    };
-    return factoryRegions[factoryName] || '경기도';
-  };
 
   const getImageSource = (factoryName) => {
     const images = {
@@ -237,10 +133,6 @@ export default function BowFactoryScreen({ route, navigation }) {
     return images[factoryName] || require('../assets/default.png');
   };
 
-  const handleFactoryPress = (factoryName) => {
-    navigation.navigate('HomeScreen', { selectedFactory: factoryName });
-  };
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.selectedFactoryContainer}>
@@ -249,13 +141,13 @@ export default function BowFactoryScreen({ route, navigation }) {
         </TouchableOpacity>
       </View>
       {selectedFactories.map((factoryName, index) => (
-        <TouchableOpacity key={index} style={styles.detailsContainer} onPress={() => handleFactoryPress(factoryName)}>
+        <View key={index} style={styles.detailsContainer}>
           <View style={styles.summaryContainer}>
             <Text style={styles.summaryTitle}>{factoryName}</Text>
             <Text style={styles.summaryText}>{summaryData[factoryName]}</Text>
             <Image source={getImageSource(factoryName)} style={styles.factoryImage} />
           </View>
-        </TouchableOpacity>
+        </View>
       ))}
     </ScrollView>
   );

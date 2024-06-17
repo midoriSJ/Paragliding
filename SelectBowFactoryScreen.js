@@ -14,10 +14,11 @@ export default function SelectBowFactoryScreen({ navigation }) {
       try {
         const response = await axios.get('http://121.127.174.92:5000/factories');
         const regionsData = response.data.reduce((acc, factory) => {
-          if (!acc[factory.region]) {
-            acc[factory.region] = { name: factory.region, factories: [] };
+          const regionKey = factory.region.substring(0, 2);
+          if (!acc[regionKey]) {
+            acc[regionKey] = { name: getFullRegionName(regionKey), factories: [] };
           }
-          acc[factory.region].factories.push(factory.name);
+          acc[regionKey].factories.push(factory.name);
           return acc;
         }, {});
         setRegions(Object.values(regionsData));
@@ -29,6 +30,28 @@ export default function SelectBowFactoryScreen({ navigation }) {
 
     fetchRegions();
   }, []);
+
+  const getFullRegionName = (region) => {
+    const regionMap = {
+      '경기': '경기도',
+      '경남': '경상남도',
+      '강원': '강원도',
+      '전남': '전라남도',
+      '경북': '경상북도',
+      '광주': '광주시',
+      '대구': '대구시',
+      '대전': '대전시',
+      '부산': '부산시',
+      '서울': '서울시',
+      '울산': '울산시',
+      '인천': '인천시',
+      '제주': '제주도',
+      '충남': '충청남도',
+      '충북': '충청북도',
+      '전북': '전라북도'
+    };
+    return regionMap[region] || region;
+  };
 
   const handleSearch = (text) => {
     setSearchText(text);
