@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ScrollView } from 'react-native';
 import axios from 'axios';
 
 export default function BowFactoryScreen({ route, navigation }) {
-  const [selectedFactory, setSelectedFactory] = useState('활공장을 선택해 주세요');
+  const [selectedFactories, setSelectedFactories] = useState([]);
   const [summaryData, setSummaryData] = useState({});
-  const [weatherData, setWeatherData] = useState(null);
 
   useEffect(() => {
     if (route.params?.selectedFactory) {
-      setSelectedFactory(route.params.selectedFactory);
-      fetchWeatherData(route.params.selectedFactory);
+      setSelectedFactories([...selectedFactories, route.params.selectedFactory]);
     }
   }, [route.params?.selectedFactory]);
 
@@ -30,19 +28,6 @@ export default function BowFactoryScreen({ route, navigation }) {
 
     fetchSummaryData();
   }, []);
-
-  const fetchWeatherData = async (factoryName) => {
-    try {
-      const region = getRegionForFactory(factoryName);
-      const response = await axios.post('http://121.127.174.92:5000/api/weather', {
-        data: { region }
-      });
-      setWeatherData(response.data);
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      Alert.alert('오류', '날씨 정보를 가져오는 중 오류가 발생했습니다.');
-    }
-  };
 
   const getRegionForFactory = (factoryName) => {
     const factoryRegions = {
@@ -148,7 +133,6 @@ export default function BowFactoryScreen({ route, navigation }) {
     return factoryRegions[factoryName] || '경기도';
   };
 
-
   const getImageSource = (factoryName) => {
     const images = {
       '각산이륙장': require('../assets/GakSanTakeOff.png'),
@@ -253,37 +237,40 @@ export default function BowFactoryScreen({ route, navigation }) {
     return images[factoryName] || require('../assets/default.png');
   };
 
+  const handleFactoryPress = (factoryName) => {
+    const region = getRegionForFactory(factoryName);
+    fetchWeatherData(region);
+  };
+
+  const fetchWeatherData = async (region) => {
+    try {
+      const response = await axios.post('http://121.127.174.92:5000/api/weather', {
+        data: { region }
+      });
+      navigation.navigate('HomeScreen', { weatherData: response.data });
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+      Alert.alert('오류', '날씨 정보를 가져오는 중 오류가 발생했습니다.');
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.selectedFactoryContainer}>
-        <Text style={styles.selectedFactoryText}>{selectedFactory}</Text>
         <TouchableOpacity style={styles.selectButton} onPress={() => navigation.navigate('SelectBowFactoryScreen')}>
-          <Text style={styles.buttonText}>선택</Text>
+          <Text style={styles.buttonText}>활공장 선택</Text>
         </TouchableOpacity>
       </View>
-      {selectedFactory !== '활공장을 선택해 주세요' && (
-        <View style={styles.detailsContainer}>
-          <TouchableOpacity
-            style={styles.summaryContainer}
-            onPress={() => navigation.navigate('FirstBowFactoryInfoScreen', { selectedFactory })}
-          >
-            <Text style={styles.summaryTitle}>{selectedFactory}</Text>
-            <Text style={styles.summaryText}>{summaryData[selectedFactory]}</Text>
-          </TouchableOpacity>
-          {weatherData && (
-            <View style={styles.weatherContainer}>
-              <Text style={styles.weatherText}>온도: {weatherData.temperature}°C</Text>
-              <Text style={styles.weatherText}>풍속: {weatherData.wind_speed} m/s</Text>
-              <Text style={styles.weatherText}>설명: {weatherData.description}</Text>
-            </View>
-          )}
-          <Image
-            source={getImageSource(selectedFactory)}
-            style={styles.factoryImage}
-          />
-        </View>
-      )}
-    </View>
+      {selectedFactories.map((factoryName, index) => (
+        <TouchableOpacity key={index} style={styles.detailsContainer} onPress={() => handleFactoryPress(factoryName)}>
+          <View style={styles.summaryContainer}>
+            <Text style={styles.summaryTitle}>{factoryName}</Text>
+            <Text style={styles.summaryText}>{summaryData[factoryName]}</Text>
+            <Image source={getImageSource(factoryName)} style={styles.factoryImage} />
+          </View>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
   );
 }
 
@@ -299,10 +286,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     alignItems: 'center',
-  },
-  selectedFactoryText: {
-    fontSize: 18,
-    marginBottom: 10,
   },
   selectButton: {
     backgroundColor: '#007bff',
@@ -337,16 +320,5 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     resizeMode: 'contain',
-  },
-  weatherContainer: {
-    marginTop: 10,
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  weatherText: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
+  }
 });

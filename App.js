@@ -72,12 +72,15 @@ export default function App() {
           {props => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
         </Stack.Screen>
         <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="SelectBowFactoryScreen" component={SelectBowFactoryScreen} />
         {isLoggedIn && (
-          <Stack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }} />
+          <>
+            <Stack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }} />
+            <Stack.Screen name="ChangeUserInfo" component={ChangeUserInfoScreen} options={{ title: "개인정보 수정" }} />
+            <Stack.Screen name="CheckUserInfo" component={CheckUserInfoScreen} />
+            <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+          </>
         )}
-        <Stack.Screen name="ChangeUserInfo" component={ChangeUserInfoScreen} options={{ title: "개인정보 수정" }} />
-        <Stack.Screen name="CheckUserInfo" component={CheckUserInfoScreen} />
-        <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

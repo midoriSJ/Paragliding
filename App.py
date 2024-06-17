@@ -13,7 +13,6 @@ import mysql.connector
 from mysql.connector import Error
 from time import sleep
 
-
 app = Flask(__name__)
 CORS(app)
 
@@ -65,7 +64,6 @@ def create_connection():
     except Error as e:
         print(f"The error '{e}' occurred")
         return None
-
 
 def fetch_and_store_weather_data():
     while True:

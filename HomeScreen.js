@@ -3,9 +3,11 @@ import { View, Text, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function HomeScreen() {
+export default function HomeScreen({ route }) {
   const [posts, setPosts] = useState([]);
   const [weather, setWeather] = useState({});
+  const selectedFactory = route.params?.selectedFactory;
+  const region = route.params?.region;
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -25,7 +27,8 @@ export default function HomeScreen() {
     const fetchWeather = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const response = await axios.get('http://121.127.174.92:5000/api/weather', {
+        const response = await axios.post('http://121.127.174.92:5000/api/weather', {
+          region,
           headers: { Authorization: `Bearer ${token}` }
         });
         console.log('Weather fetched:', response.data);
@@ -37,8 +40,10 @@ export default function HomeScreen() {
     };
 
     fetchPosts();
-    fetchWeather();
-  }, []);
+    if (region) {
+      fetchWeather();
+    }
+  }, [region]);
 
   return (
     <ScrollView style={styles.container}>
@@ -47,7 +52,7 @@ export default function HomeScreen() {
         <Text style={styles.siteName}>GlideMate</Text>
       </View>
       <View style={styles.weatherSection}>
-        <Text style={styles.sectionTitle}>활공장</Text>
+        <Text style={styles.sectionTitle}>활공장: {selectedFactory}</Text>
         <View style={styles.weatherCard}>
           <Text style={styles.weatherLocation}>{weather.location || '활공장 정보 없음'}</Text>
           <View style={styles.weatherInfo}>
