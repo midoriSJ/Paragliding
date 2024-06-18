@@ -93,15 +93,17 @@ export default function HomeScreen({ route }) {
       </View>
       <View style={styles.boardSection}>
         <Text style={styles.sectionTitle}>게시판</Text>
-        <View style={styles.boardCard}>
-          {posts.length > 0 ? (
-            posts.map((post, index) => (
-              <Text key={index}>{`${post.boardType} (${post.title})`}</Text>
-            ))
-          ) : (
-            <Text>게시물이 없습니다.</Text>
-          )}
-        </View>
+        {posts.length > 0 ? (
+          posts.map((post, index) => (
+            <View key={index} style={styles.postCard}>
+              <Text style={styles.postTitle}>{post.title}</Text>
+              <Text style={styles.postLocation}>장소: {post.location}</Text>
+              <Text style={styles.postContent}>{post.content}</Text>
+            </View>
+          ))
+        ) : (
+          <Text>게시물이 없습니다.</Text>
+        )}
       </View>
     </ScrollView>
   );
@@ -174,9 +176,23 @@ const styles = StyleSheet.create({
   boardSection: {
     padding: 20,
   },
-  boardCard: {
+  postCard: {
     backgroundColor: '#f0f0f0',
-    padding: 20,
+    padding: 15,
     borderRadius: 10,
+    marginBottom: 10,
+  },
+  postTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  postLocation: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 5,
+  },
+  postContent: {
+    fontSize: 16,
   },
 });

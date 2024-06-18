@@ -12,7 +12,10 @@ export default function PostDetailScreen({ route }) {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://121.127.165.28:5000/posts/${post.postNum}/comments`);
+        const token = await AsyncStorage.getItem('token');
+        const response = await axios.get(`http://121.127.165.28:5000/api/posts/${post.postNum}/comments`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         setComments(response.data);
       } catch (error) {
         console.error('Error fetching comments:', error);
@@ -29,12 +32,20 @@ export default function PostDetailScreen({ route }) {
     }
 
     try {
-      const response = await axios.post(`http://121.127.165.28:5000/posts/${post.postNum}/comments`, {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.post(`http://121.127.165.28:5000/api/posts/${post.postNum}/comments`, {
         content: newComment,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.data.success) {
-        setComments([...comments, response.data.comment]);
+        setComments([...comments, {
+          id: response.data.id,  // Assuming the response contains the new comment ID
+          content: newComment,
+          created_at: new Date().toISOString(),
+          username: 'You'  // Replace 'You' with the actual username if available
+        }]);
         setNewComment('');
       } else {
         Alert.alert('댓글 추가 실패', response.data.message || '댓글 추가에 실패했습니다.');
@@ -61,11 +72,12 @@ export default function PostDetailScreen({ route }) {
           <View style={styles.postHeader}>
             <Image source={require('../assets/avatar.png')} style={styles.avatar} />
             <View>
-              <Text style={styles.username}>{post.author}</Text>
+              <Text style={styles.username}>{post.username}</Text>
               <Text style={styles.date}>{post.createdAt}</Text>
             </View>
           </View>
           <Text style={styles.postTitle}>{post.title}</Text>
+          <Text style={styles.postLocation}>{post.location}</Text>
           <Text style={styles.postContent}>{post.content}</Text>
           <View style={styles.imageContainer}>
             {post.images && post.images.map((image, index) => (
@@ -78,9 +90,9 @@ export default function PostDetailScreen({ route }) {
             <View key={comment.id} style={styles.comment}>
               <Image source={require('../assets/avatar.png')} style={styles.avatar} />
               <View style={styles.commentContent}>
-                <Text style={styles.username}>{comment.user}</Text>
+                <Text style={styles.username}>{comment.username}</Text>
                 <Text style={styles.commentText}>{comment.content}</Text>
-                <Text style={styles.date}>{comment.date}</Text>
+                <Text style={styles.date}>{new Date(comment.created_at).toLocaleString()}</Text>
               </View>
               <TouchableOpacity>
                 <Text style={styles.moreButton}>⋮</Text>
@@ -155,6 +167,10 @@ const styles = StyleSheet.create({
   postTitle: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  postLocation: {
+    fontSize: 16,
     marginBottom: 8,
   },
   postContent: {

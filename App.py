@@ -364,6 +364,7 @@ def get_posts():
     board = request.args.get('board', '자유게시판')  # 기본값은 '자유게시판'
     
     try:
+        print(f"Fetching posts for board: {board}")  # 디버깅을 위한 로그
         cur = mysql.connection.cursor()
         cur.execute("SELECT postNum, title, location, content, image FROM posts WHERE board = %s", (board,))
         posts = cur.fetchall()
@@ -375,7 +376,9 @@ def get_posts():
         
         return jsonify(posts_list)
     except Exception as e:
+        print(f"Error retrieving posts: {str(e)}")  # 디버깅을 위한 로그
         return jsonify({"message": "Error retrieving posts", "error": str(e)}), 500
+
 
 
 
@@ -406,6 +409,59 @@ def create_post():
         return jsonify({"message": "Post created successfully"}), 201
     except Exception as e:
         return jsonify({"message": "Error creating post", "error": str(e)}), 500
+
+
+@app.route('/api/posts/<int:postNum>/comments', methods=['GET'], endpoint = 'comments')
+@token_required
+def get_comments(postNum):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT comments.id, comments.content, comments.created_at, users.username 
+            FROM comments 
+            JOIN users ON comments.author_id = users.id 
+            WHERE comments.postNum = %s
+        """, (postNum,))
+        comments = cur.fetchall()
+        cur.close()
+        
+        comments_list = []
+        for comment in comments:
+            comments_list.append({
+                "id": comment[0],
+                "content": comment[1],
+                "created_at": comment[2],
+                "username": comment[3]
+            })
+        
+        return jsonify(comments_list), 200
+    except Exception as e:
+        return jsonify({"message": "Error retrieving comments", "error": str(e)}), 500
+  
+
+@app.route('/api/posts/<int:postNum>/comments', methods=['POST'])
+@token_required
+def add_comment(postNum):
+    content = request.json.get('content')
+    if not content:
+        return jsonify({"message": "Content is required"}), 400
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT id FROM users WHERE username = %s", (request.user,))
+        author_id = cur.fetchone()
+        
+        if author_id:
+            author_id = author_id[0]
+            cur.execute("INSERT INTO comments (postNum, author_id, content) VALUES (%s, %s, %s)", 
+                        (postNum, author_id, content))
+            mysql.connection.commit()
+            cur.close()
+            return jsonify({"message": "Comment added successfully", "success": True}), 201
+        else:
+            return jsonify({"message": "User not found"}), 404
+    except Exception as e:
+        return jsonify({"message": "Error adding comment", "error": str(e)}), 500
 
 
 @app.route('/api/send-code', methods=['POST'], endpoint='send_code')
