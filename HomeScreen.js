@@ -13,7 +13,7 @@ export default function HomeScreen({ route }) {
     const fetchPosts = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const response = await axios.get('http://121.127.174.92:5000/api/getPosts', {
+        const response = await axios.get('http://121.127.99.208:5000/api/getPosts', {
           headers: { Authorization: `Bearer ${token}` }
         });
         console.log('Posts fetched:', response.data);
@@ -27,7 +27,7 @@ export default function HomeScreen({ route }) {
     const fetchWeather = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const response = await axios.post('http://121.127.174.92:5000/api/weather', {
+        const response = await axios.post('http://121.127.99.208:5000/api/weather', {
           factoryName: selectedFactory,
         }, {
           headers: { Authorization: `Bearer ${token}` }

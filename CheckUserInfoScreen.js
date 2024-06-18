@@ -9,7 +9,7 @@ export default function CheckUserInfo({ route }) {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get(`http://192.168.147.130:5000/user/${userId}`);
+        const response = await axios.get(`http://121.127.99.208:5000/user/${userId}`);
         setUser(response.data);
       } catch (error) {
         console.error('Error fetching user info:', error);

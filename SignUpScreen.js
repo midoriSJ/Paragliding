@@ -39,7 +39,7 @@ const SignUpScreen = ({ navigation }) => {
 
   const handleSignUp = () => {
     if (isUsernameValid && isEmailVerified) {
-      axios.post('http://121.127.174.92:5000/api/signup', userInfo)
+      axios.post('http://121.127.99.208:5000/api/signup', userInfo)
         .then(response => {
           navigation.navigate('HomeTabs');
         })
@@ -50,7 +50,7 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const handleSendCode = () => {
-    axios.post('http://121.127.174.92:5000/api/send-code', { email: userInfo.email })
+    axios.post('http://121.127.99.208:5000/api/send-code', { email: userInfo.email })
       .then(response => {
         alert('인증번호가 발송되었습니다.');
         setCodeSent(true);
@@ -61,7 +61,7 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const handleVerifyCode = () => {
-    axios.post('http://121.127.174.92:5000/api/verify-code', { email: userInfo.email, code: userInfo.code })
+    axios.post('http://121.127.99.208:5000/api/verify-code', { email: userInfo.email, code: userInfo.code })
       .then(response => {
         alert('인증번호가 확인되었습니다.');
         setEmailVerified(true);
@@ -73,7 +73,7 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const handleCheckUsername = () => {
-    axios.post('http://121.127.174.92:5000/api/check-username', { username: userInfo.username })
+    axios.post('http://121.127.99.208:5000/api/check-username', { username: userInfo.username })
       .then(response => {
         if (response.data.available) {
           alert('사용 가능한 아이디입니다.');

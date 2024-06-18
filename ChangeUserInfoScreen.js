@@ -18,7 +18,7 @@ export default function ChangeUserInfoScreen({ navigation }) {
 
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.post('http://121.127.174.92:5000/api/update-user', {
+      const response = await axios.post('http://121.127.99.208:5000/api/update-user', {
         username,
         email,
         currentPassword,

@@ -16,7 +16,7 @@ export default function BowFactoryScreen({ route, navigation }) {
   useEffect(() => {
     const fetchSummaryData = async () => {
       try {
-        const response = await axios.get('http://121.127.174.92:5000/factories');
+        const response = await axios.get('http://121.127.99.208:5000/factories');
         const data = response.data.reduce((acc, factory) => {
           acc[factory.name] = factory.summary;
           return acc;
