@@ -17,6 +17,8 @@ import SelectBowFactoryScreen from './screens/SelectBowFactoryScreen';
 import ChangeUserInfoScreen from './screens/ChangeUserInfoScreen'; // 추가
 import CheckUserInfoScreen from './screens/CheckUserInfoScreen'; // 추가
 import DeleteAccountScreen from './screens/DeleteAccountScreen'; // 추가
+import WritePostScreen from './screens/WritePostScreen'; // 추가
+import PostDetailScreen from './screens/PostDetailScreen'; // 추가
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -71,18 +73,20 @@ export default function App() {
         <Stack.Screen name="Login">
           {props => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
         </Stack.Screen>
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
         {isLoggedIn && (
           <>
             <Stack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }} />
             <Stack.Screen name="BowFactoryScreen" component={BowFactoryScreen} />
             <Stack.Screen name="SelectBowFactoryScreen" component={SelectBowFactoryScreen} />
             <Stack.Screen name="FirstBowFactoryInfoScreen" component={FirstBowFactoryInfoScreen} />
+            <Stack.Screen name="WritePost" component={WritePostScreen} /> 
+            <Stack.Screen name="PostDetail" component={PostDetailScreen} />
           </>
         )}
-        <Stack.Screen name="ChangeUserInfo" component={ChangeUserInfoScreen} options={{ title: "개인정보 수정" }} />
-        <Stack.Screen name="CheckUserInfo" component={CheckUserInfoScreen} />
-        <Stack.Screen name="DeleteAccount" component={DeleteAccountScreen} />
+        <Stack.Screen name="ChangeUserInfoScreen" component={ChangeUserInfoScreen} options={{ title: "개인정보 수정" }} />
+        <Stack.Screen name="CheckUserInfoScreen" component={CheckUserInfoScreen} />
+        <Stack.Screen name="DeleteAccountScreen" component={DeleteAccountScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
