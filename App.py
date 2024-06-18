@@ -366,13 +366,13 @@ def get_posts():
     try:
         print(f"Fetching posts for board: {board}")  # 디버깅을 위한 로그
         cur = mysql.connection.cursor()
-        cur.execute("SELECT postNum, title, location, content, image FROM posts WHERE board = %s", (board,))
+        cur.execute("SELECT postNum, title, location, content, image, created_at FROM posts WHERE board = %s", (board,))
         posts = cur.fetchall()
         cur.close()
         
         posts_list = []
         for post in posts:
-            posts_list.append({"postNum": post[0], "title": post[1], "location": post[2], "content": post[3], "image": post[4]})
+            posts_list.append({"postNum": post[0], "title": post[1], "location": post[2], "content": post[3], "image": post[4], "created_at" : post[5]})
         
         return jsonify(posts_list)
     except Exception as e:
@@ -419,7 +419,31 @@ def get_username():
     except Exception as e:
         return jsonify({"message": "Error retrieving username", "error": str(e)}), 500
 
-
+@app.route('/api/getPostDetails/<int:postNum>', methods=['GET'])
+def get_post_details(postNum):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT p.postNum, p.title, p.location, p.content, p.created_at, u.username 
+            FROM posts p
+            JOIN users u ON p.username = u.username
+            WHERE p.postNum = %s
+        """, (postNum,))
+        post = cur.fetchone()
+        if post:
+            post_details = {
+                "postNum": post[0],
+                "title": post[1],
+                "location": post[2],
+                "content": post[3],
+                "created_at": post[4],
+                "username": post[5]
+            }
+            return jsonify(post_details), 200
+        else:
+            return jsonify({"message": "Post not found"}), 404
+    except Exception as e:
+        return jsonify({"message": "Error retrieving post", "error": str(e)}), 500
 
 @app.route('/api/posts/<int:postNum>/comments', methods=['GET'], endpoint = 'comments')
 @token_required

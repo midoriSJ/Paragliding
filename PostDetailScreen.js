@@ -88,7 +88,7 @@ export default function PostDetailScreen({ route }) {
             <Image source={require('../assets/avatar.png')} style={styles.avatar} />
             <View style={styles.headerDetails}>
               <Text style={styles.username}>{post.username}</Text>
-              <Text style={styles.date}>{new Date(post.createdAt).toLocaleString()}</Text>
+              <Text style={styles.date}>{new Date(post.created_at).toLocaleString()}</Text>
             </View>
           </View>
           <Text style={styles.postTitle}>{post.title}</Text>
