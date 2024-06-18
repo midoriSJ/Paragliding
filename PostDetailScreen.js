@@ -12,7 +12,7 @@ export default function PostDetailScreen({ route }) {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://121.127.165.28:5000/posts/${post.id}/comments`);
+        const response = await axios.get(`http://121.127.165.28:5000/posts/${post.postNum}/comments`);
         setComments(response.data);
       } catch (error) {
         console.error('Error fetching comments:', error);
@@ -20,7 +20,7 @@ export default function PostDetailScreen({ route }) {
     };
 
     fetchComments();
-  }, [post.id]);
+  }, [post.postNum]);
 
   const handleAddComment = async () => {
     if (!newComment.trim()) {
@@ -29,7 +29,7 @@ export default function PostDetailScreen({ route }) {
     }
 
     try {
-      const response = await axios.post(`http://121.127.165.28:5000/posts/${post.id}/comments`, {
+      const response = await axios.post(`http://121.127.165.28:5000/posts/${post.postNum}/comments`, {
         content: newComment,
       });
 

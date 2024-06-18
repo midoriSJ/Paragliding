@@ -44,8 +44,8 @@ def token_required(f):
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
             request.user = data['username']
-        except:
-            return jsonify({'message': 'Token is invalid'}), 401
+        except Exception as e:
+            return jsonify({'message': 'Token is invalid', 'error': str(e)}), 401
         return f(*args, **kwargs)
     return decorator
 
@@ -363,20 +363,18 @@ def get_weather():
 def get_posts():
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, title, content, image FROM posts")
+        cur.execute("SELECT postNum, title, location, content, image FROM posts")
         posts = cur.fetchall()
         cur.close()
         
         posts_list = []
         for post in posts:
-            posts_list.append({"id": post[0], "title": post[1], "content": post[2], "image": post[3]})
+            posts_list.append({"postNum": post[0], "title": post[1], "location": post[2], "content": post[3], "image": post[4]})
         
-        print(f"Posts fetched: {posts_list}")  # 디버깅 출력 추가
-        
-        return jsonify(posts_list)  # 빈 리스트도 반환됨
+        return jsonify(posts_list)
     except Exception as e:
-        print(f"Error retrieving posts: {e}")  # 오류 메시지 출력
         return jsonify({"message": "Error retrieving posts", "error": str(e)}), 500
+
 
 
 @app.route('/api/createPosts', methods=['POST'], endpoint='create_post')
@@ -386,7 +384,7 @@ def create_post():
     location = request.form['location']
     content = request.form['content']
     image = request.files.get('image')
-    
+
     try:
         cur = mysql.connection.cursor()
         if image:
@@ -397,10 +395,10 @@ def create_post():
         else:
             cur.execute("INSERT INTO posts (title, location, content) VALUES (%s, %s, %s)", 
                         (title, location, content))
-        
+
         mysql.connection.commit()
         cur.close()
-        
+
         return jsonify({"message": "Post created successfully"}), 201
     except Exception as e:
         return jsonify({"message": "Error creating post", "error": str(e)}), 500

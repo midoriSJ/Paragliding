@@ -13,16 +13,15 @@ export default function LoginScreen({ navigation, setIsLoggedIn }) {
         username: id,
         password: pw,
       });
-      console.log(response.data);  // 서버 응답 출력
-
+  
       if (response.status === 200 && response.data.message === "Login successful") {
         if (response.data.token) {
           await AsyncStorage.setItem('token', response.data.token); // 토큰 저장
-          setIsLoggedIn(true); // 로그인 상태 업데이트
+          setIsLoggedIn(true);
           navigation.reset({
             index: 0,
             routes: [{ name: 'HomeTabs' }],
-          }); // 로그인 성공 시 HomeTabs로 이동
+          });
         } else {
           Alert.alert('로그인 실패', '토큰이 없습니다.');
         }
@@ -30,10 +29,11 @@ export default function LoginScreen({ navigation, setIsLoggedIn }) {
         Alert.alert('로그인 실패', response.data.message || '알 수 없는 오류가 발생했습니다.');
       }
     } catch (error) {
-      console.error(error);  // 에러 출력
+      console.error(error);
       Alert.alert('로그인 실패', '서버와 통신 중 문제가 발생했습니다.');
     }
   };
+  
 
   return (
     <View style={styles.container}>
