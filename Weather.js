@@ -31,7 +31,7 @@ export default function Weather() {
 
   const postDataToServer = async (data) => {
     try {
-      await axios.post("http://121.127.99.208:5000/api/data", { data });
+      await axios.post("http://121.127.165.28:5000/api/data", { data });
       console.log('Data posted successfully');
     } catch (error) {
       console.error('Error posting data to server:', error);

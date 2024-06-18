@@ -9,7 +9,7 @@ export default function LoginScreen({ navigation, setIsLoggedIn }) {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://121.127.99.208:5000/api/login', {
+      const response = await axios.post('http://121.127.165.28:5000/api/login', {
         username: id,
         password: pw,
       });

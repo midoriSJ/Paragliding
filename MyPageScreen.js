@@ -7,7 +7,7 @@ export default function MyPageScreen({ navigation }) {
   const handleLogout = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.post('http://121.127.99.208:5000/api/logout', {}, {
+      const response = await axios.post('http://121.127.165.28:5000/api/logout', {}, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

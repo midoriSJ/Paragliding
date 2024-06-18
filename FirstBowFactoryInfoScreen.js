@@ -9,7 +9,7 @@ export default function FirstBowFactoryInfoScreen({ route }) {
   useEffect(() => {
     const fetchFactoryDetails = async () => {
       try {
-        const response = await axios.get(`http://121.127.99.208:5000/factory-details?name=${selectedFactory}`);
+        const response = await axios.get(`http://121.127.165.28:5000/factory-details?name=${selectedFactory}`);
         setFactoryDetails(response.data);
       } catch (error) {
         console.error('Error fetching factory details:', error);

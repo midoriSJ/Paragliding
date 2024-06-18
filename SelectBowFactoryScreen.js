@@ -12,7 +12,7 @@ export default function SelectBowFactoryScreen({ navigation }) {
   useEffect(() => {
     const fetchRegions = async () => {
       try {
-        const response = await axios.get('http://121.127.99.208:5000/factories');
+        const response = await axios.get('http://121.127.165.28:5000/factories');
         const regionsData = response.data.reduce((acc, factory) => {
           const regionKey = factory.region.substring(0, 2);
           if (!acc[regionKey]) {

@@ -9,7 +9,7 @@ export default function DeleteAccountScreen({ navigation }) {
   const handleDeleteAccount = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.delete('http://121.127.99.208:5000/api/delete-user', {
+      const response = await axios.delete('http://121.127.165.28:5000/api/delete-user', {
         headers: { Authorization: `Bearer ${token}` },
         data: { password },
       });

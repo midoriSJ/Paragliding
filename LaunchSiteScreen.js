@@ -7,7 +7,7 @@ const LaunchSiteScreen = ({ navigation }) => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    axios.get('http://121.127.174.92:5000/api/launchsites')
+    axios.get('http://121.127.165.28:5000/api/launchsites')
       .then(response => {
         setLaunchSites(response.data);
       })

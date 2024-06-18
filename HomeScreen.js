@@ -13,7 +13,7 @@ export default function HomeScreen({ route }) {
     const fetchPosts = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const response = await axios.get('http://121.127.99.208:5000/api/getPosts', {
+        const response = await axios.get('http://121.127.165.28:5000/api/getPosts', {
           headers: { Authorization: `Bearer ${token}` }
         });
         console.log('Posts fetched:', response.data);
@@ -27,7 +27,7 @@ export default function HomeScreen({ route }) {
     const fetchWeather = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const response = await axios.post('http://121.127.99.208:5000/api/weather', {
+        const response = await axios.post('http://121.127.165.28:5000/api/weather', {
           factoryName: selectedFactory,
         }, {
           headers: { Authorization: `Bearer ${token}` }
@@ -46,6 +46,19 @@ export default function HomeScreen({ route }) {
     }
   }, [selectedFactory]);
 
+  const getDirection = (angle) => {
+    if (angle >= 0 && angle <= 22.5) return 'N';
+    if (angle > 22.5 && angle <= 67.5) return 'NE';
+    if (angle > 67.5 && angle <= 112.5) return 'E';
+    if (angle > 112.5 && angle <= 157.5) return 'SE';
+    if (angle > 157.5 && angle <= 202.5) return 'S';
+    if (angle > 202.5 && angle <= 247.5) return 'SW';
+    if (angle > 247.5 && angle <= 292.5) return 'W';
+    if (angle > 292.5 && angle <= 337.5) return 'NW';
+    if (angle > 337.5 && angle < 360) return 'N';
+    return 'N/A';
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -63,7 +76,9 @@ export default function HomeScreen({ route }) {
           <View style={styles.weatherStats}>
             <View style={styles.weatherStat}>
               <Text style={styles.weatherStatLabel}>풍향</Text>
-              <Text style={styles.weatherStatValue}>{weather.wind_direction || '-'}</Text>
+              <Text style={styles.weatherStatValue}>
+                {weather.wind_direction !== undefined ? getDirection(weather.wind_direction) : '-'}
+              </Text>
             </View>
             <View style={styles.weatherStat}>
               <Text style={styles.weatherStatLabel}>풍속</Text>
