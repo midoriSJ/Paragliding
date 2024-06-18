@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, TextInput, StyleSheet, Text, TouchableOpacity, Alert, Picker } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +10,7 @@ export default function WritePostScreen() {
   const [location, setLocation] = useState('');
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
+  const [selectedBoard, setSelectedBoard] = useState('자유게시판');
   const navigation = useNavigation();
 
   const requestStoragePermission = async () => {
@@ -45,38 +46,38 @@ export default function WritePostScreen() {
 
   const handleComplete = async () => {
     try {
-        const token = await AsyncStorage.getItem('token');
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('location', location);
-        formData.append('content', content);
-        images.forEach((image, index) => {
-            formData.append('image', {
-                uri: image.uri,
-                type: 'image/jpeg',
-                name: `image${index}.jpg`,
-            });
+      const token = await AsyncStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('location', location);
+      formData.append('content', content);
+      formData.append('board', selectedBoard);  // 선택한 게시판 추가
+      images.forEach((image, index) => {
+        formData.append('image', {
+          uri: image.uri,
+          type: 'image/jpeg',
+          name: `image${index}.jpg`,
         });
+      });
 
-        const response = await axios.post('http://121.127.165.28:5000/api/createPosts', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${token}`
-            },
-        });
+      const response = await axios.post('http://121.127.165.28:5000/api/createPosts', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        },
+      });
 
-        if (response.status === 201) {
-            Alert.alert('글이 성공적으로 등록되었습니다.');
-            navigation.goBack();
-        } else {
-            Alert.alert('글 등록에 실패했습니다.');
-        }
+      if (response.status === 201) {
+        Alert.alert('글이 성공적으로 등록되었습니다.');
+        navigation.goBack();
+      } else {
+        Alert.alert('글 등록에 실패했습니다.');
+      }
     } catch (error) {
-        console.error(error);
-        Alert.alert('글 등록 중 오류가 발생했습니다.');
+      console.error(error);
+      Alert.alert('글 등록 중 오류가 발생했습니다.');
     }
-};
-
+  };
 
   return (
     <View style={styles.container}>
@@ -108,6 +109,14 @@ export default function WritePostScreen() {
         onChangeText={setContent}
         multiline
       />
+      <Picker
+        selectedValue={selectedBoard}
+        style={styles.picker}
+        onValueChange={(itemValue, itemIndex) => setSelectedBoard(itemValue)}
+      >
+        <Picker.Item label="자유게시판" value="자유게시판" />
+        <Picker.Item label="모임게시판" value="모임게시판" />
+      </Picker>
       <View style={styles.imageContainer}>
         <TouchableOpacity style={styles.addButton} onPress={handleAddImage}>
           <Text style={styles.addButtonText}>📷</Text>
@@ -167,6 +176,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 8,
     paddingTop: 8,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    marginBottom: 10,
   },
   imageContainer: {
     flexDirection: 'row',

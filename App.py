@@ -361,9 +361,11 @@ def get_weather():
 @app.route('/api/getPosts', methods=['GET'], endpoint='get_posts')
 @token_required
 def get_posts():
+    board = request.args.get('board', '자유게시판')  # 기본값은 '자유게시판'
+    
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT postNum, title, location, content, image FROM posts")
+        cur.execute("SELECT postNum, title, location, content, image FROM posts WHERE board = %s", (board,))
         posts = cur.fetchall()
         cur.close()
         
@@ -377,12 +379,14 @@ def get_posts():
 
 
 
+
 @app.route('/api/createPosts', methods=['POST'], endpoint='create_post')
 @token_required
 def create_post():
     title = request.form['title']
     location = request.form['location']
     content = request.form['content']
+    board = request.form['board']  # 추가
     image = request.files.get('image')
 
     try:
@@ -390,11 +394,11 @@ def create_post():
         if image:
             image_path = 'uploads/' + image.filename
             image.save(image_path)
-            cur.execute("INSERT INTO posts (title, location, content, image) VALUES (%s, %s, %s, %s)", 
-                        (title, location, content, image_path))
+            cur.execute("INSERT INTO posts (title, location, content, board, image) VALUES (%s, %s, %s, %s, %s)", 
+                        (title, location, content, board, image_path))
         else:
-            cur.execute("INSERT INTO posts (title, location, content) VALUES (%s, %s, %s)", 
-                        (title, location, content))
+            cur.execute("INSERT INTO posts (title, location, content, board) VALUES (%s, %s, %s, %s)", 
+                        (title, location, content, board))
 
         mysql.connection.commit()
         cur.close()
@@ -402,6 +406,7 @@ def create_post():
         return jsonify({"message": "Post created successfully"}), 201
     except Exception as e:
         return jsonify({"message": "Error creating post", "error": str(e)}), 500
+
 
 @app.route('/api/send-code', methods=['POST'], endpoint='send_code')
 def send_code():

@@ -16,7 +16,7 @@ export default function BoardScreen() {
         const token = await AsyncStorage.getItem('token');
         const response = await axios.get(`http://121.127.165.28:5000/api/getPosts`, {
           headers: { Authorization: `Bearer ${token}` },
-          params: { type: selectedTab }
+          params: { board: selectedTab } // 서버로 선택된 게시판 정보를 전달
         });
         setFilteredPosts(response.data);
       } catch (error) {
