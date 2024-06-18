@@ -366,7 +366,7 @@ def get_posts():
     try:
         print(f"Fetching posts for board: {board}")  # 디버깅을 위한 로그
         cur = mysql.connection.cursor()
-        cur.execute("SELECT postNum, title, location, content, image, created_at FROM posts WHERE board = %s", (board,))
+        cur.execute("SELECT postNum, title, location, content, image, created_at, username FROM posts WHERE board = %s", (board,))
         posts = cur.fetchall()
         cur.close()
         
@@ -378,7 +378,8 @@ def get_posts():
                 "location": post[2],
                 "content": post[3],
                 "image": post[4],
-                "created_at": post[5].strftime('%Y-%m-%d %H:%M:%S')  # datetime 객체를 문자열로 변환
+                "created_at": post[5].strftime('%Y-%m-%d %H:%M:%S'),  # datetime 객체를 문자열로 변환
+                "username" : post[6]
             })
         
         return jsonify(posts_list)
@@ -398,17 +399,18 @@ def create_post():
     content = request.form['content']
     board = request.form['board']  # 추가
     image = request.files.get('image')
+    username = request.user  # 현재 로그인한 사용자의 username
 
     try:
         cur = mysql.connection.cursor()
         if image:
             image_path = 'uploads/' + image.filename
             image.save(image_path)
-            cur.execute("INSERT INTO posts (title, location, content, board, image) VALUES (%s, %s, %s, %s, %s)", 
-                        (title, location, content, board, image_path))
+            cur.execute("INSERT INTO posts (title, location, content, board, image, username) VALUES (%s, %s, %s, %s, %s, %s)", 
+                        (title, location, content, board, image_path, username))
         else:
-            cur.execute("INSERT INTO posts (title, location, content, board) VALUES (%s, %s, %s, %s)", 
-                        (title, location, content, board))
+            cur.execute("INSERT INTO posts (title, location, content, board, username) VALUES (%s, %s, %s, %s, %s)", 
+                        (title, location, content, board, username))
 
         mysql.connection.commit()
         cur.close()
@@ -431,9 +433,9 @@ def get_post_details(postNum):
     try:
         cur = mysql.connection.cursor()
         cur.execute("""
-            SELECT p.postNum, p.title, p.location, p.content, p.created_at, u.username 
+            SELECT p.postNum, p.title, p.location, p.content, p.created_at, p.username 
             FROM posts p
-            JOIN users u ON p.username = u.username
+            
             WHERE p.postNum = %s
         """, (postNum,))
         post = cur.fetchone()
