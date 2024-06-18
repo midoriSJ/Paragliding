@@ -111,6 +111,7 @@ export default function HomeScreen({ route }) {
                 <Text style={styles.postTitle}>{post.title}</Text>
                 <Text style={styles.postLocation}>장소: {post.location}</Text>
                 <Text style={styles.postContent}>{post.content}</Text>
+                <Text style={styles.postDate}>{new Date(post.created_at).toLocaleString()}</Text>
               </View>
             </TouchableOpacity>
           ))
@@ -127,6 +128,7 @@ export default function HomeScreen({ route }) {
                 <Text style={styles.postTitle}>{post.title}</Text>
                 <Text style={styles.postLocation}>장소: {post.location}</Text>
                 <Text style={styles.postContent}>{post.content}</Text>
+                <Text style={styles.postDate}>{new Date(post.created_at).toLocaleString()}</Text>
               </View>
             </TouchableOpacity>
           ))
@@ -223,5 +225,9 @@ const styles = StyleSheet.create({
   },
   postContent: {
     fontSize: 16,
+  },
+  postDate: {
+    fontSize: 14,
+    color: '#777',
   },
 });

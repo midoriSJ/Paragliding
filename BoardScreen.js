@@ -59,6 +59,7 @@ export default function BoardScreen() {
               <Text style={styles.postTitle}>{post.title}</Text>
               <Text style={styles.postText}>{post.content}</Text>
               <Text style={styles.postAuthor}>{post.author}</Text>
+              <Text style={styles.postDate}>{new Date(post.created_at).toLocaleString()}</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -121,6 +122,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   postAuthor: {
+    fontSize: 14,
+    color: '#777',
+  },
+  postDate: {
     fontSize: 14,
     color: '#777',
   },

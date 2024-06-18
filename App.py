@@ -372,7 +372,14 @@ def get_posts():
         
         posts_list = []
         for post in posts:
-            posts_list.append({"postNum": post[0], "title": post[1], "location": post[2], "content": post[3], "image": post[4], "created_at" : post[5]})
+            posts_list.append({
+                "postNum": post[0],
+                "title": post[1],
+                "location": post[2],
+                "content": post[3],
+                "image": post[4],
+                "created_at": post[5].strftime('%Y-%m-%d %H:%M:%S')  # datetime 객체를 문자열로 변환
+            })
         
         return jsonify(posts_list)
     except Exception as e:
