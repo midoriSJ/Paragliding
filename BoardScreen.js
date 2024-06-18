@@ -53,8 +53,8 @@ export default function BoardScreen() {
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.scrollContainer}>
-        {filteredPosts.map((post, index) => (
-          <TouchableOpacity key={index} style={styles.postContainer} onPress={() => navigateToPostDetail(post)}>
+        {filteredPosts.map((post) => (
+          <TouchableOpacity key={post.postNum} style={styles.postContainer} onPress={() => navigateToPostDetail(post)}>
             <View style={styles.postContent}>
               <Text style={styles.postTitle}>{post.title}</Text>
               <Text style={styles.postText}>{post.content}</Text>
