@@ -9,6 +9,7 @@ export default function PostDetailScreen({ route }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const navigation = useNavigation();
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -23,7 +24,20 @@ export default function PostDetailScreen({ route }) {
       }
     };
 
+    const fetchUsername = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const response = await axios.get('http://121.127.165.28:5000/api/getUsername', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUsername(response.data.username);
+      } catch (error) {
+        console.error('Error fetching username:', error);
+      }
+    };
+
     fetchComments();
+    fetchUsername();
   }, [post.postNum]);
 
   const handleAddComment = async () => {
@@ -45,7 +59,7 @@ export default function PostDetailScreen({ route }) {
           id: response.data.id,
           content: newComment,
           created_at: new Date().toISOString(),
-          username: 'You'  // 실제 사용자 이름을 넣어야 합니다.
+          username: username
         }]);
         setNewComment('');
       } else {
@@ -72,9 +86,9 @@ export default function PostDetailScreen({ route }) {
         <View style={styles.postContainer}>
           <View style={styles.postHeader}>
             <Image source={require('../assets/avatar.png')} style={styles.avatar} />
-            <View>
+            <View style={styles.headerDetails}>
               <Text style={styles.username}>{post.username}</Text>
-              <Text style={styles.date}>{post.createdAt}</Text>
+              <Text style={styles.date}>{new Date(post.createdAt).toLocaleString()}</Text>
             </View>
           </View>
           <Text style={styles.postTitle}>{post.title}</Text>
@@ -156,6 +170,12 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 8,
+  },
+  headerDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flex: 1,
   },
   username: {
     fontSize: 16,

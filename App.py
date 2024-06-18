@@ -409,6 +409,16 @@ def create_post():
         return jsonify({"message": "Post created successfully"}), 201
     except Exception as e:
         return jsonify({"message": "Error creating post", "error": str(e)}), 500
+    
+@app.route('/api/getUsername', methods=['GET'] ,endpoint = "g")
+@token_required
+def get_username():
+    try:
+        username = request.user
+        return jsonify({"username": username}), 200
+    except Exception as e:
+        return jsonify({"message": "Error retrieving username", "error": str(e)}), 500
+
 
 
 @app.route('/api/posts/<int:postNum>/comments', methods=['GET'], endpoint = 'comments')
