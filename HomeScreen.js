@@ -4,7 +4,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen({ route }) {
-  const [posts, setPosts] = useState([]);
+  const [freeBoardPosts, setFreeBoardPosts] = useState([]);
+  const [meetingBoardPosts, setMeetingBoardPosts] = useState([]);
   const [weather, setWeather] = useState({});
   const selectedFactory = route.params?.selectedFactory;
   const region = route.params?.region;
@@ -13,11 +14,16 @@ export default function HomeScreen({ route }) {
     const fetchPosts = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        const response = await axios.get('http://121.127.165.28:5000/api/getPosts', {
-          headers: { Authorization: `Bearer ${token}` }
+        const freeBoardResponse = await axios.get('http://121.127.165.28:5000/api/getPosts', {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { board: '자유게시판' }
         });
-        console.log('Posts fetched:', response.data);
-        setPosts(response.data);
+        const meetingBoardResponse = await axios.get('http://121.127.165.28:5000/api/getPosts', {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { board: '모임게시판' }
+        });
+        setFreeBoardPosts(freeBoardResponse.data);
+        setMeetingBoardPosts(meetingBoardResponse.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
         Alert.alert('오류', '게시물을 가져오는 중 오류가 발생했습니다.');
@@ -32,7 +38,6 @@ export default function HomeScreen({ route }) {
         }, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        console.log('Weather fetched:', response.data);
         setWeather(response.data);
       } catch (error) {
         console.error('Error fetching weather:', error);
@@ -92,9 +97,23 @@ export default function HomeScreen({ route }) {
         </View>
       </View>
       <View style={styles.boardSection}>
-        <Text style={styles.sectionTitle}>게시판</Text>
-        {posts.length > 0 ? (
-          posts.map((post, index) => (
+        <Text style={styles.sectionTitle}>자유게시판</Text>
+        {freeBoardPosts.length > 0 ? (
+          freeBoardPosts.map((post, index) => (
+            <View key={index} style={styles.postCard}>
+              <Text style={styles.postTitle}>{post.title}</Text>
+              <Text style={styles.postLocation}>장소: {post.location}</Text>
+              <Text style={styles.postContent}>{post.content}</Text>
+            </View>
+          ))
+        ) : (
+          <Text>게시물이 없습니다.</Text>
+        )}
+      </View>
+      <View style={styles.boardSection}>
+        <Text style={styles.sectionTitle}>모임게시판</Text>
+        {meetingBoardPosts.length > 0 ? (
+          meetingBoardPosts.map((post, index) => (
             <View key={index} style={styles.postCard}>
               <Text style={styles.postTitle}>{post.title}</Text>
               <Text style={styles.postLocation}>장소: {post.location}</Text>
