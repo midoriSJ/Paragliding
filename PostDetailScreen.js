@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PostDetailScreen({ route }) {
   const { post, boardTitle } = route.params;
@@ -41,10 +42,10 @@ export default function PostDetailScreen({ route }) {
 
       if (response.data.success) {
         setComments([...comments, {
-          id: response.data.id,  // Assuming the response contains the new comment ID
+          id: response.data.id,
           content: newComment,
           created_at: new Date().toISOString(),
-          username: 'You'  // Replace 'You' with the actual username if available
+          username: 'You'  // 실제 사용자 이름을 넣어야 합니다.
         }]);
         setNewComment('');
       } else {

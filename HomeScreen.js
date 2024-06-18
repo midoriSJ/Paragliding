@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen({ route }) {
   const [freeBoardPosts, setFreeBoardPosts] = useState([]);
@@ -9,6 +10,7 @@ export default function HomeScreen({ route }) {
   const [weather, setWeather] = useState({});
   const selectedFactory = route.params?.selectedFactory;
   const region = route.params?.region;
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -22,8 +24,8 @@ export default function HomeScreen({ route }) {
           headers: { Authorization: `Bearer ${token}` },
           params: { board: '모임게시판' }
         });
-        setFreeBoardPosts(freeBoardResponse.data);
-        setMeetingBoardPosts(meetingBoardResponse.data);
+        setFreeBoardPosts(freeBoardResponse.data.slice(0, 5));
+        setMeetingBoardPosts(meetingBoardResponse.data.slice(0, 5));
       } catch (error) {
         console.error('Error fetching posts:', error);
         Alert.alert('오류', '게시물을 가져오는 중 오류가 발생했습니다.');
@@ -64,6 +66,10 @@ export default function HomeScreen({ route }) {
     return 'N/A';
   };
 
+  const navigateToPostDetail = (post) => {
+    navigation.navigate('PostDetail', { post, boardTitle: post.board });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -100,11 +106,13 @@ export default function HomeScreen({ route }) {
         <Text style={styles.sectionTitle}>자유게시판</Text>
         {freeBoardPosts.length > 0 ? (
           freeBoardPosts.map((post, index) => (
-            <View key={index} style={styles.postCard}>
-              <Text style={styles.postTitle}>{post.title}</Text>
-              <Text style={styles.postLocation}>장소: {post.location}</Text>
-              <Text style={styles.postContent}>{post.content}</Text>
-            </View>
+            <TouchableOpacity key={index} onPress={() => navigateToPostDetail(post)}>
+              <View style={styles.postCard}>
+                <Text style={styles.postTitle}>{post.title}</Text>
+                <Text style={styles.postLocation}>장소: {post.location}</Text>
+                <Text style={styles.postContent}>{post.content}</Text>
+              </View>
+            </TouchableOpacity>
           ))
         ) : (
           <Text>게시물이 없습니다.</Text>
@@ -114,11 +122,13 @@ export default function HomeScreen({ route }) {
         <Text style={styles.sectionTitle}>모임게시판</Text>
         {meetingBoardPosts.length > 0 ? (
           meetingBoardPosts.map((post, index) => (
-            <View key={index} style={styles.postCard}>
-              <Text style={styles.postTitle}>{post.title}</Text>
-              <Text style={styles.postLocation}>장소: {post.location}</Text>
-              <Text style={styles.postContent}>{post.content}</Text>
-            </View>
+            <TouchableOpacity key={index} onPress={() => navigateToPostDetail(post)}>
+              <View style={styles.postCard}>
+                <Text style={styles.postTitle}>{post.title}</Text>
+                <Text style={styles.postLocation}>장소: {post.location}</Text>
+                <Text style={styles.postContent}>{post.content}</Text>
+              </View>
+            </TouchableOpacity>
           ))
         ) : (
           <Text>게시물이 없습니다.</Text>
